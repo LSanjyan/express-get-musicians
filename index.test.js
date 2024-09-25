@@ -18,4 +18,24 @@ describe("./musicians endpoint", () => {
     console.log(responseData);
     expect(Array.isArray(responseData)).toBe(true);
   });
+  it("should return a musician by ID", async () => {
+    const musician = await Musician.findOne({ where: { name: "Mick Jagger" } });
+    const response = await request(app).get(`/musicians/${musician.id}`);
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty("name", "Mick Jagger");
+    expect(response.body).toHaveProperty("instrument", "Voice");
+  });
+  it("should create new musician", async () => {
+    const response = await request(app)
+      .post("/musicians")
+      .send({ name: "George", instrument: "Piano" });
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty("name", "George");
+    expect(response.body).toHaveProperty("instrument", "Piano");
+  });
+  // it("should update a musician", async () => {
+  //   const response = (await request(app).put("/musicians")).setEncoding({name: "George1", instrument: "Piano1"})
+  //   expect(response.status).
+
+  // })
 });
