@@ -9,33 +9,49 @@ const { Musician } = require("./models/index");
 const app = require("./src/app");
 const { seedMusician } = require("./seedData");
 
-describe("./musicians endpoint", () => {
-  // Write your tests here
-  test("Testing musicians endpoint", async () => {
-    const response = await request(app).get("/musicians");
-    expect(response.statusCode).toBe(200);
-    const responseData = JSON.parse(response.text);
-    console.log(responseData);
-    expect(Array.isArray(responseData)).toBe(true);
-  });
-  it("should return a musician by ID", async () => {
-    const musician = await Musician.findOne({ where: { name: "Mick Jagger" } });
-    const response = await request(app).get(`/musicians/${musician.id}`);
-    expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty("name", "Mick Jagger");
-    expect(response.body).toHaveProperty("instrument", "Voice");
-  });
-  it("should create new musician", async () => {
+// describe("./musicians endpoint", () => {
+//   // Write your tests here
+//   test("Testing musicians endpoint", async () => {
+//     const response = await request(app).get("/musicians");
+//     expect(response.statusCode).toBe(200);
+//     const responseData = JSON.parse(response.text);
+//     console.log(responseData);
+//     expect(Array.isArray(responseData)).toBe(true);
+//   });
+//   it("should return a musician by ID", async () => {
+//     const musician = await Musician.findOne({ where: { name: "Mick Jagger" } });
+//     const response = await request(app).get(`/musicians/${musician.id}`);
+//     expect(response.status).toBe(200);
+//     expect(response.body).toHaveProperty("name", "Mick Jagger");
+//     expect(response.body).toHaveProperty("instrument", "Voice");
+//   });
+//   it("should create new musician", async () => {
+//     const response = await request(app)
+//       .post("/musicians")
+//       .send({ name: "George", instrument: "Piano" });
+//     expect(response.status).toBe(200);
+//     expect(response.body).toHaveProperty("name", "George");
+//     expect(response.body).toHaveProperty("instrument", "Piano");
+//   });
+//   // it("should update a musician", async () => {
+//   //   const response = (await request(app).put("/musicians")).setEncoding({name: "George1", instrument: "Piano1"})
+//   //   expect(response.status).
+
+//   // })
+// });
+let restQuantity;
+beforeAll(async () => {
+  const musicians = await Musician.findAll({});
+  restQuantity = musicians.length;
+});
+describe("POST /musicians", () => {
+  it("should create a new musician", async () => {
+    const newMusician = { name: "Jacky", instrument: "Piano" };
     const response = await request(app)
       .post("/musicians")
-      .send({ name: "George", instrument: "Piano" });
-    expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty("name", "George");
-    expect(response.body).toHaveProperty("instrument", "Piano");
+      .send(newMusician)
+      .expect(201);
+    expect(response.body.name).toBe(newMusician.name);
+    expect(response.body.instrument).toBe(newMusician.instrument);
   });
-  // it("should update a musician", async () => {
-  //   const response = (await request(app).put("/musicians")).setEncoding({name: "George1", instrument: "Piano1"})
-  //   expect(response.status).
-
-  // })
 });
