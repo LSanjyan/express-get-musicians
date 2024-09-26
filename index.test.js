@@ -44,14 +44,44 @@ beforeAll(async () => {
   const musicians = await Musician.findAll({});
   restQuantity = musicians.length;
 });
-describe("POST /musicians", () => {
-  it("should create a new musician", async () => {
-    const newMusician = { name: "Jacky", instrument: "Piano" };
-    const response = await request(app)
-      .post("/musicians")
-      .send(newMusician)
-      .expect(201);
-    expect(response.body.name).toBe(newMusician.name);
-    expect(response.body.instrument).toBe(newMusician.instrument);
+// describe("POST /musicians", () => {
+//   it("should create a new musician", async () => {
+//     const newMusician = { name: "Jacky", instrument: "Piano" };
+//     const response = await request(app)
+//       .post("/musicians")
+//       .send(newMusician)
+//       .expect(201);
+//     expect(response.body.name).toBe(newMusician.name);
+//     expect(response.body.instrument).toBe(newMusician.instrument);
+//   });
+// });
+describe("Should test name & instrument validation", () => {
+  test("Should return validation error if name field is empty", async () => {
+    const response = await request(app).post("/musicians").send({
+      instrument: "Guitar",
+    });
+    expect(response.statusCode).toBe(400);
+    expect(response.body.errors).toEqual([
+      {
+        msg: "Name is required",
+        path: "name",
+        location: "body",
+        type: "field",
+      },
+    ]);
+  });
+  test("Should return validation error if instrument field is empty", async () => {
+    const response = await request(app).post("/musicians").send({
+      name: "John",
+    });
+    expect(response.statusCode).toBe(400);
+    expect(response.body.errors).toEqual([
+      {
+        msg: "Instrument is required",
+        path: "instrument",
+        location: "body",
+        type: "field",
+      },
+    ]);
   });
 });

@@ -1,16 +1,34 @@
 const express = require("express");
 const { Musician } = require("../models");
 const router = express.Router();
+const { check, validationResult } = require("express-validator");
+
+//POST with validation
+router.post(
+  "/",
+  [
+    check("name").notEmpty().withMessage("Name is required"),
+    check("instrument").notEmpty().withMessage("Instrument is required"),
+  ],
+  (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    musician.push(req.body);
+    res.status(201).json(musician);
+  }
+);
 
 // CREATE a new musician
-router.post("/", async (req, res) => {
-  try {
-    const musician = await Musician.create(req.body);
-    res.status(201).json(musician);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
+// router.post("/", async (req, res) => {
+//   try {
+//     const musician = await Musician.create(req.body);
+//     res.status(201).json(musician);
+//   } catch (error) {
+//     res.status(400).json({ error: error.message });
+//   }
+// });
 
 // READ all musicians
 router.get("/", async (req, res, next) => {
